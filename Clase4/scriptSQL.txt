@@ -1,0 +1,81 @@
+create table cliente (
+	idcliente serial primary key,   -- Identificador unico
+	documento varchar(20) not null,
+	nombre varchar(100) not null,
+	correo varchar(100) unique,
+	telefono varchar(20)
+);
+
+create table producto(
+	idproducto serial primary key,
+	nombre varchar(100) not null,
+	precio numeric(10,2) not null,
+	stock int default 0
+);
+
+create table venta (
+	idventa serial primary key,
+	fecha date not null,
+	total numeric(10,2),
+	idcliente int not null,
+	
+	--Restricción: relación con la tabla cliente
+	constraint fk_cliente
+		foreign key (idcliente)
+		references cliente(idcliente)
+		on delete cascade --si se elimina un cliente, también se elimina  sus ventas
+);
+
+create table detalleventa (
+	idDetalle serial primary key,
+	idventa int not null,
+	idproducto int not null,
+	cantidad int not null check (cantidad > 0),
+	unique (idventa, idproducto),
+	
+	foreign key (idventa) references venta(idventa),
+	foreign key (idproducto) references producto(idproducto)
+);
+
+
+
+insert into cliente (documento, nombre, correo, telefono)
+values
+('100022324', 'Laura Arbelaez', 'laura@gmail.com','300453433'),
+('153535353', 'Mario Gutierrez', 'mario@gmail.com','310458433'),
+('103434233', 'Maria Bolanios', 'maria@gmail.com','3653232322');
+
+insert into producto (nombre, precio, stock)
+values
+('teclado mecanico rgb', 180000.00, 25),
+('monitor led 24 pulgadas', 550000.00, 15);
+
+select * from venta;
+
+insert into venta(fecha, total, idcliente)
+values
+('2025-10-05', 275000.00, 1),
+('2025-10-06', 550000, 2),
+('2025-10-07', 365000, 3);
+
+
+
+insert into detalleventa(idventa, idproducto, cantidad)
+values
+(1,1,1),  --venta 1: laura compró 1 teclado
+(2,2,1); -- venta 2: mario compró monitor
+
+
+
+select * from cliente
+where nombre = 'Laura Arbelaez';
+
+
+select * from producto
+where precio > 200000;
+
+
+select *
+from producto 
+where stock < 20;
+
